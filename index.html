@@ -13,6 +13,22 @@
     body {
       margin: 0;
       background-color: black;
+      font-family: sans-serif;
+    }
+
+    #start-ar {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      padding: 14px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #008cff;
+      color: white;
+      cursor: pointer;
     }
 
     #cam-error {
@@ -33,7 +49,7 @@
       padding: 8px 12px;
       font-size: 16px;
       font-family: monospace;
-      z-index: 9999;
+      z-index: 9998;
       border-radius: 6px;
     }
   </style>
@@ -46,20 +62,18 @@
   <script src="js/app.js" defer></script>
 </head>
 <body>
-  <div id="cam-error">
-    🚫 No se pudo acceder a la cámara. Revisa los permisos del navegador o activa desde Configuración > Safari.
-  </div>
-
+  <div id="cam-error">🚫 No se pudo acceder a la cámara. Revisa los permisos en tu navegador.</div>
   <div id="marker-info">Marcador: ---</div>
+  <button id="start-ar">Iniciar experiencia AR</button>
 
   <a-scene
-    mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
     color-space="sRGB"
     renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: true"
     shadow="type: pcfsoft"
+    visible="false"
   >
     <a-assets>
       <template id="video-template">
@@ -68,25 +82,32 @@
           loop
           muted
           playsinline
-          crossorigin="anonymous"
           webkit-playsinline
+          crossorigin="anonymous"
           style="display: none"
         ></video>
       </template>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <!-- Mejor iluminación compatible con iOS -->
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
     <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="1 2 1"></a-entity>
   </a-scene>
 
-  <!-- Detección de permisos de cámara -->
   <script>
-    window.addEventListener('load', () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        document.getElementById('cam-error').style.display = 'block';
+    const startBtn = document.getElementById("start-ar");
+    const scene = document.querySelector("a-scene");
+
+    startBtn.addEventListener("click", async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        startBtn.style.display = "none";
+        document.getElementById("cam-error").style.display = "none";
+
+        scene.setAttribute("mindar-image", "imageTargetSrc: assets/targets.mind");
+        scene.setAttribute("visible", "true");
+      } catch (e) {
+        document.getElementById("cam-error").style.display = "block";
       }
     });
   </script>

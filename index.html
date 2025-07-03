@@ -52,6 +52,10 @@
       z-index: 9998;
       border-radius: 6px;
     }
+
+    a-scene {
+      display: none;
+    }
   </style>
 
   <!-- A-Frame & MindAR -->
@@ -62,18 +66,18 @@
   <script src="js/app.js" defer></script>
 </head>
 <body>
-  <div id="cam-error">🚫 No se pudo acceder a la cámara. Revisa los permisos en tu navegador.</div>
+  <div id="cam-error">🚫 No se pudo acceder a la cámara. Revisa los permisos del navegador.</div>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Iniciar experiencia AR</button>
+  <button id="start-ar">Iniciar experiencia ReproAR</button>
 
   <a-scene
+    mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
     color-space="sRGB"
     renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: true"
     shadow="type: pcfsoft"
-    visible="false"
   >
     <a-assets>
       <template id="video-template">
@@ -100,12 +104,10 @@
 
     startBtn.addEventListener("click", async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         startBtn.style.display = "none";
         document.getElementById("cam-error").style.display = "none";
-
-        scene.setAttribute("mindar-image", "imageTargetSrc: assets/targets.mind");
-        scene.setAttribute("visible", "true");
+        scene.style.display = "block";
       } catch (e) {
         document.getElementById("cam-error").style.display = "block";
       }

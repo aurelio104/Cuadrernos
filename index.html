@@ -48,10 +48,9 @@
     }
   </style>
 
-  <!-- A-Frame & MindAR -->
+  <!-- A-Frame y MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
   <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -64,21 +63,16 @@
     color-space="sRGB"
     renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
     vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: true"
+    device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <template id="video-template">
-        <video
-          autoplay
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          crossorigin="anonymous"
-          style="display: none"
-        ></video>
-      </template>
+      <!-- 22 videos precargados -->
+      <!-- Generado automáticamente en app.js también -->
+      ${Array.from({ length: 22 }, (_, i) => {
+        const n = i + 1;
+        return `<video id="video-${n}" src="assets/videos/video${n}.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>`;
+      }).join('\n')}
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>

@@ -7,44 +7,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = document.createElement("a-entity");
     target.setAttribute("mindar-image-target", `targetIndex: ${i}`);
 
-    let videoEl = null;
-    let plane = null;
     const videoId = `video-${i + 1}`;
-    const videoSrc = `assets/videos/video${i + 1}.mp4`;
+    const videoEl = document.getElementById(videoId);
+    let plane = null;
 
     target.addEventListener("targetFound", () => {
       console.log(`✅ Marcador detectado: targetIndex = ${i}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ${i}`;
 
-      if (!videoEl) {
-        videoEl = document.createElement("video");
-        videoEl.setAttribute("id", videoId);
-        videoEl.setAttribute("src", videoSrc);
-        videoEl.setAttribute("loop", true);
-        videoEl.setAttribute("muted", true);
-        videoEl.setAttribute("playsinline", true);
-        videoEl.setAttribute("crossorigin", "anonymous");
-        videoEl.style.display = "none";
-        document.body.appendChild(videoEl);
+      if (!plane) {
+        plane = document.createElement("a-video");
+        plane.setAttribute("src", `#${videoId}`);
+        plane.setAttribute("width", "1");
+        plane.setAttribute("height", "1.5");
+        plane.setAttribute("position", "0 0 0");
+        plane.setAttribute("rotation", "0 0 0");
+        target.appendChild(plane);
+      }
 
-        videoEl.addEventListener("loadeddata", () => {
-          plane = document.createElement("a-video");
-          plane.setAttribute("src", `#${videoId}`);
-          plane.setAttribute("width", "1");
-          plane.setAttribute("height", "1.5");
-          plane.setAttribute("position", "0 0 0");
-          plane.setAttribute("rotation", "0 0 0");
-          target.appendChild(plane);
-
-          videoEl.play().catch(() => {
-            console.warn(`⚠️ No se pudo reproducir el video: ${videoSrc}`);
-          });
-        });
-
-        videoEl.load(); // fuerza el preload
-      } else {
-        videoEl.play().catch(() => {
-          console.warn(`⚠️ No se pudo reproducir el video: ${videoSrc}`);
+      if (videoEl) {
+        videoEl.play().catch((err) => {
+          console.warn(`⚠️ No se pudo reproducir el video: ${videoId}`, err);
         });
       }
     });

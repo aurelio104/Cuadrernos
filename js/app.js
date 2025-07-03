@@ -4,38 +4,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const TOTAL_MARCADORES = 22;
 
   for (let i = 0; i < TOTAL_MARCADORES; i++) {
-    const targetIndex = i;
+    const idx = i;
     const target = document.createElement("a-entity");
-    target.setAttribute("mindar-image-target", `targetIndex: ${targetIndex}`);
+    target.setAttribute("mindar-image-target", `targetIndex: ${idx}`);
+    let videoEl, plane;
 
-    let videoEl = null;
-    let plane = null;
-    const videoId = `video-${targetIndex + 1}`;
-    const videoSrc = `assets/videos/video${targetIndex + 1}.mp4`;
-
-    // ✅ Cuando se detecta el marcador
     target.addEventListener("targetFound", async () => {
-      console.log(`✅ Marcador detectado: targetIndex = ${targetIndex}`);
-      if (markerInfo) markerInfo.innerText = `Marcador: ${targetIndex}`;
-
-      // Crear el video solo si aún no existe
+      if (markerInfo) markerInfo.innerText = `Marcador: ${idx}`;
       if (!videoEl) {
         videoEl = document.createElement("video");
-        videoEl.setAttribute("id", videoId);
-        videoEl.setAttribute("src", videoSrc);
-        videoEl.setAttribute("loop", true);
-        videoEl.setAttribute("muted", true);
-        videoEl.setAttribute("playsinline", true);
+        videoEl.setAttribute("id", `video-${idx + 1}`);
+        videoEl.src = `assets/videos/video${idx + 1}.mp4`;
+        videoEl.muted = true;
+        videoEl.loop = true;
+        videoEl.playsInline = true;
         videoEl.setAttribute("webkit-playsinline", true);
-        videoEl.setAttribute("crossorigin", "anonymous");
+        videoEl.crossOrigin = "anonymous";
         videoEl.style.display = "none";
         document.body.appendChild(videoEl);
       }
 
-      // Crear el plano de reproducción si aún no existe
       if (!plane) {
         plane = document.createElement("a-video");
-        plane.setAttribute("src", `#${videoId}`);
+        plane.setAttribute("src", `#video-${idx + 1}`);
         plane.setAttribute("width", "1");
         plane.setAttribute("height", "1.5");
         plane.setAttribute("position", "0 0 0");
@@ -45,24 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         await videoEl.play();
-        console.log(`▶️ Video ${videoId} reproducido`);
+        console.log(`▶️ Video ${idx + 1} en reproducción`);
       } catch (err) {
-        console.warn(`⚠️ No se pudo reproducir el video: ${videoId}`, err);
+        console.warn(`⚠️ Error al reproducir video ${idx + 1}`, err);
       }
     });
 
-    // 🔁 Cuando se pierde el marcador
     target.addEventListener("targetLost", () => {
-      console.log(`🕳️ Marcador perdido: targetIndex = ${targetIndex}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ---`;
-
       if (videoEl) {
         videoEl.pause();
         videoEl.currentTime = 0;
       }
     });
 
-    // Agregar el target a la escena
     scene.appendChild(target);
   }
 });

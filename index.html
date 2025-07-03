@@ -2,33 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Repro WebAR</title>
+  <title>AR.js Repro Video</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#000000" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     body {
       margin: 0;
       background-color: black;
-    }
-
-    #start-ar {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      padding: 14px 24px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      background-color: #008cff;
-      color: white;
-      cursor: pointer;
-      display: none; /* Oculto por defecto */
     }
 
     #marker-info {
@@ -38,47 +19,49 @@
       background: rgba(0, 0, 0, 0.6);
       color: white;
       padding: 8px 12px;
-      font-size: 16px;
       font-family: monospace;
-      z-index: 9998;
-      border-radius: 6px;
+      z-index: 9999;
     }
 
-    a-scene {
+    #start-ar {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      padding: 12px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
       display: none;
     }
   </style>
 
-  <!-- A-Frame y MindAR -->
+  <!-- A-Frame + AR.js -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Reproducir video</button>
+  <button id="start-ar">▶️ Reproducir Video</button>
 
   <a-scene
-    mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
-    color-space="sRGB"
-    renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    shadow="type: pcfsoft"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    renderer="antialias: true; alpha: true"
   >
-    <a-assets></a-assets>
+    <a-assets>
+      <video id="video-1" src="assets/videos/video1.mp4" loop="true" muted="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
+    </a-assets>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    <a-entity light="type: ambient; intensity: 0.7"></a-entity>
-    <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="1 2 1"></a-entity>
+    <a-marker preset="custom" type="pattern" url="assets/marker.patt" id="custom-marker">
+      <a-video id="video-plane" src="#video-1" width="1" height="0.6" position="0 0 0"></a-video>
+    </a-marker>
+
+    <a-entity camera></a-entity>
   </a-scene>
-
-  <script>
-    // Mostrar escena (si decides mantener este botón como inicio global)
-    document.getElementById("start-ar").addEventListener("click", () => {
-      document.querySelector("a-scene").style.display = "block";
-    });
-  </script>
 </body>
 </html>

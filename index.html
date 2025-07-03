@@ -98,8 +98,21 @@
   </a-scene>
 
   <script>
-    document.getElementById("start-ar").addEventListener("click", () => {
-      document.querySelector("a-scene").style.display = "block";
+    document.getElementById("start-ar").addEventListener("click", async () => {
+      const scene = document.querySelector("a-scene");
+      scene.style.display = "block";
+
+      // Reproducir todos los videos manualmente para iOS 26+
+      for (let i = 1; i <= 22; i++) {
+        const video = document.getElementById(`video-${i}`);
+        try {
+          await video.play();
+          console.log(`✅ Video ${i} listo`);
+        } catch (err) {
+          console.warn(`⚠️ Video ${i} no se pudo reproducir`, err);
+        }
+      }
+
       document.getElementById("start-ar").style.display = "none";
     });
   </script>

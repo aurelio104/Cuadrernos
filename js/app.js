@@ -4,17 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const TOTAL_MARCADORES = 22;
 
   for (let i = 0; i < TOTAL_MARCADORES; i++) {
+    const targetIndex = i;
     const target = document.createElement("a-entity");
-    target.setAttribute("mindar-image-target", `targetIndex: ${i}`);
+    target.setAttribute("mindar-image-target", `targetIndex: ${targetIndex}`);
 
-    const videoId = `video-${i + 1}`;
+    const videoId = `video-${targetIndex + 1}`;
     const videoEl = document.getElementById(videoId);
     let plane = null;
 
+    // ✅ Cuando se detecta el marcador
     target.addEventListener("targetFound", () => {
-      console.log(`✅ Marcador detectado: targetIndex = ${i}`);
-      if (markerInfo) markerInfo.innerText = `Marcador: ${i}`;
+      console.log(`✅ Marcador detectado: targetIndex = ${targetIndex}`);
+      if (markerInfo) markerInfo.innerText = `Marcador: ${targetIndex}`;
 
+      // Crear el plano si no existe aún
       if (!plane) {
         plane = document.createElement("a-video");
         plane.setAttribute("src", `#${videoId}`);
@@ -25,19 +28,28 @@ document.addEventListener("DOMContentLoaded", () => {
         target.appendChild(plane);
       }
 
+      // Intentar reproducir el video
       if (videoEl) {
-        videoEl.play().catch((err) => {
+        videoEl.play().then(() => {
+          console.log(`▶️ Video ${videoId} en reproducción`);
+        }).catch((err) => {
           console.warn(`⚠️ No se pudo reproducir el video: ${videoId}`, err);
         });
       }
     });
 
+    // 🔁 Cuando se pierde el marcador
     target.addEventListener("targetLost", () => {
-      console.log(`🕳️ Marcador perdido: targetIndex = ${i}`);
+      console.log(`🕳️ Marcador perdido: targetIndex = ${targetIndex}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ---`;
-      if (videoEl) videoEl.pause();
+
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.currentTime = 0; // Reiniciar el video
+      }
     });
 
+    // Agregar el target a la escena
     scene.appendChild(target);
   }
 });

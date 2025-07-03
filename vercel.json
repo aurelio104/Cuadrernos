@@ -3,12 +3,6 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "cuadrernos.vercel.app"
-        }
-      ],
       "destination": "/index.html"
     }
   ],
@@ -19,6 +13,10 @@
         {
           "key": "Cache-Control",
           "value": "no-cache"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     }

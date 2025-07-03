@@ -8,16 +8,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = document.createElement("a-entity");
     target.setAttribute("mindar-image-target", `targetIndex: ${targetIndex}`);
 
-    const videoId = `video-${targetIndex + 1}`;
-    const videoEl = document.getElementById(videoId);
+    let videoEl = null;
     let plane = null;
+    const videoId = `video-${targetIndex + 1}`;
+    const videoSrc = `assets/videos/video${targetIndex + 1}.mp4`;
 
     // ✅ Cuando se detecta el marcador
-    target.addEventListener("targetFound", () => {
+    target.addEventListener("targetFound", async () => {
       console.log(`✅ Marcador detectado: targetIndex = ${targetIndex}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ${targetIndex}`;
 
-      // Crear el plano si no existe aún
+      // Crear el video solo si aún no existe
+      if (!videoEl) {
+        videoEl = document.createElement("video");
+        videoEl.setAttribute("id", videoId);
+        videoEl.setAttribute("src", videoSrc);
+        videoEl.setAttribute("loop", true);
+        videoEl.setAttribute("muted", true);
+        videoEl.setAttribute("playsinline", true);
+        videoEl.setAttribute("webkit-playsinline", true);
+        videoEl.setAttribute("crossorigin", "anonymous");
+        videoEl.style.display = "none";
+        document.body.appendChild(videoEl);
+      }
+
+      // Crear el plano de reproducción si aún no existe
       if (!plane) {
         plane = document.createElement("a-video");
         plane.setAttribute("src", `#${videoId}`);
@@ -28,13 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
         target.appendChild(plane);
       }
 
-      // Intentar reproducir el video
-      if (videoEl) {
-        videoEl.play().then(() => {
-          console.log(`▶️ Video ${videoId} en reproducción`);
-        }).catch((err) => {
-          console.warn(`⚠️ No se pudo reproducir el video: ${videoId}`, err);
-        });
+      try {
+        await videoEl.play();
+        console.log(`▶️ Video ${videoId} reproducido`);
+      } catch (err) {
+        console.warn(`⚠️ No se pudo reproducir el video: ${videoId}`, err);
       }
     });
 
@@ -45,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (videoEl) {
         videoEl.pause();
-        videoEl.currentTime = 0; // Reiniciar el video
+        videoEl.currentTime = 0;
       }
     });
 

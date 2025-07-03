@@ -13,7 +13,6 @@
     body {
       margin: 0;
       background-color: black;
-      font-family: sans-serif;
     }
 
     #start-ar {
@@ -29,15 +28,6 @@
       background-color: #008cff;
       color: white;
       cursor: pointer;
-    }
-
-    #cam-error {
-      display: none;
-      background-color: red;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      padding: 12px;
     }
 
     #marker-info {
@@ -62,13 +52,11 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Tu JS -->
   <script src="js/app.js" defer></script>
 </head>
 <body>
-  <div id="cam-error">🚫 No se pudo acceder a la cámara. Revisa los permisos del navegador.</div>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Iniciar experiencia ReproAR</button>
+  <button id="start-ar">Iniciar ReproAR</button>
 
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind"
@@ -99,18 +87,9 @@
   </a-scene>
 
   <script>
-    const startBtn = document.getElementById("start-ar");
-    const scene = document.querySelector("a-scene");
-
-    startBtn.addEventListener("click", async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        startBtn.style.display = "none";
-        document.getElementById("cam-error").style.display = "none";
-        scene.style.display = "block";
-      } catch (e) {
-        document.getElementById("cam-error").style.display = "block";
-      }
+    document.getElementById("start-ar").addEventListener("click", () => {
+      document.querySelector("a-scene").style.display = "block";
+      document.getElementById("start-ar").style.display = "none";
     });
   </script>
 </body>

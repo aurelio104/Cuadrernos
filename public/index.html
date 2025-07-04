@@ -7,113 +7,67 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="data:," />
+
+  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css" />
-
-  <!-- A-Frame + MindAR -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="js/app.js" defer></script>
-</head>
-<body>
-  <!-- UI -->
-  <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Iniciar experiencia</button>
-
-  <!-- Escena AR -->
-  <a-scene
-    mindar-image="imageTargetSrc: assets/targets.mind"
-    embedded
-    color-space="sRGB"
-    renderer="antialias: true; alpha: true; preserveDrawingBuffer: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    shadow="type: pcfsoft"
-  >
-    <a-assets>
-      <video id="video-1" src="assets/videos/video1.mp4" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-    </a-assets>
-
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    <a-entity light="type: ambient; intensity: 0.7"></a-entity>
-    <a-entity light="type: directional; intensity: 1.2; color: #fff" position="1 2 1"></a-entity>
-  </a-scene>
-
-  <!-- JS control simple -->
-  <script>
-    const startButton = document.getElementById("start-ar");
-    const scene = document.querySelector("a-scene");
-
-    startButton.addEventListener("click", async () => {
-      scene.style.visibility = "visible";
-      scene.style.opacity = "1";
-      scene.style.pointerEvents = "auto";
-      startButton.style.display = "none";
-
-      try {
-        await navigator.mediaDevices?.getUserMedia({ video: true });
-        console.log("✅ Cámara activada");
-      } catch (err) {
-        console.warn("❌ Error al acceder a la cámara:", err);
-        alert("No se pudo activar la cámara.");
-      }
-
-      const videos = scene.querySelectorAll("video");
-      videos.forEach(video => {
-        video.load();
-        video.play().catch(err => {
-          console.warn(`⚠️ Video ${video.id} bloqueado:`, err);
-        });
-      });
-    });
-  </script>
-
-  <!-- Estilo mínimo -->
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: black;
-      overflow: hidden;
-    }
-
-    #start-ar {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      padding: 14px 24px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      background-color: #008cff;
-      color: white;
-      cursor: pointer;
-    }
-
     #marker-info {
       position: fixed;
       top: 10px;
       right: 10px;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.6);
       color: white;
       padding: 8px 12px;
       font-size: 16px;
       font-family: monospace;
-      z-index: 9998;
+      z-index: 9999;
       border-radius: 6px;
     }
-
-    a-scene {
-      visibility: hidden;
-      opacity: 0;
-      pointer-events: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
   </style>
+
+  <!-- A-Frame & MindAR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Tu JS -->
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div id="cam-error">
+    🚫 No se pudo acceder a la cámara. Revisa los permisos en tu navegador.
+  </div>
+
+  <!-- HUD para ver qué marcador fue detectado -->
+  <div id="marker-info">Marcador: ---</div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: assets/targets.mind"
+    embedded
+    color-space="sRGB"
+    renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true"
+    shadow="type: pcfsoft"
+  >
+    <a-assets>
+      <template id="video-template">
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          crossorigin="anonymous"
+          webkit-playsinline
+          style="display: none"
+        ></video>
+      </template>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity light="type: ambient; intensity: 0.5"></a-entity>
+    <a-entity light="type: point; intensity: 2; distance: 10; decay: 2; color: #ffddaa" position="0 2 2"></a-entity>
+  </a-scene>
 </body>
 </html>

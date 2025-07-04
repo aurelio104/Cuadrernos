@@ -72,35 +72,39 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Esperar a que A-Frame esté cargado antes de inyectar entidades
   scene.addEventListener('loaded', () => {
-    const canvas = scene.canvas;
+    setTimeout(() => {
+      const canvas = scene.canvas;
+      if (!canvas) {
+        console.error("❌ Canvas no inicializado");
+        return;
+      }
 
-    if (!canvas) {
-      console.error("❌ Canvas no inicializado");
-      return;
-    }
+      // Manejar pérdida de contexto WebGL
+      canvas.addEventListener("webglcontextlost", (e) => {
+        e.preventDefault();
+        console.warn("⚠️ WebGL context perdido");
+        alert("El sistema AR se interrumpió. Por favor recarga.");
+      });
 
-    // Protección contra pérdida de contexto WebGL
-    canvas.addEventListener("webglcontextlost", (e) => {
-      e.preventDefault();
-      console.warn("⚠️ WebGL context perdido");
-      alert("El sistema AR se interrumpió. Recarga la página.");
-    });
+      // Validar WebGL context activo
+      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (!gl) {
+        console.warn("❌ WebGL no disponible al cargar escena");
+        alert("No se pudo iniciar WebGL. Recarga la página.");
+        return;
+      }
 
-    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-    if (gl) {
       console.log("✔️ WebGL context activo");
-    } else {
-      console.warn("❌ WebGL no disponible al cargar escena");
-    }
 
-    // Inyectar los marcadores tras asegurarse de que todo está listo
-    for (let i = 0; i < totalMarkers; i++) {
-      const entity = document.createElement("a-entity");
-      entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
-      entity.setAttribute("mindar-video-handler", "");
-      scene.appendChild(entity);
-    }
+      // Inyectar entidades por marcador
+      for (let i = 0; i < totalMarkers; i++) {
+        const entity = document.createElement("a-entity");
+        entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
+        entity.setAttribute("mindar-video-handler", "");
+        scene.appendChild(entity);
+      }
+
+    }, 100); // pequeño retraso para asegurar canvas válido
   });
 });

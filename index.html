@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     html, body {
@@ -59,6 +59,18 @@
   <!-- A-Frame y MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Componente para habilitar preserveDrawingBuffer -->
+  <script>
+    AFRAME.registerComponent('custom-renderer', {
+      init: function () {
+        this.el.renderer.preserveDrawingBuffer = true;
+        console.log("✔️ preserveDrawingBuffer activado");
+      }
+    });
+  </script>
+
+  <!-- Tu lógica -->
   <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -66,16 +78,16 @@
   <button id="start-ar">Iniciar ReproAR</button>
 
   <a-scene
+    custom-renderer
     mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
     color-space="sRGB"
-    renderer="antialias: true; alpha: true; physicallyCorrectLights: true; preserveDrawingBuffer: true"
+    renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <!-- Video opcional precargado -->
       <video id="video-1" src="assets/videos/video1.mp4" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
 
@@ -122,7 +134,7 @@
       showScene();
       startButton.style.display = "none";
 
-      // Esperar que A-Frame esté completamente listo
+      // Esperar a que A-Frame esté completamente listo
       await new Promise(resolve => {
         if (scene.hasLoaded) return resolve();
         scene.addEventListener("loaded", resolve, { once: true });

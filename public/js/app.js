@@ -16,7 +16,6 @@ AFRAME.registerComponent('mindar-video-handler', {
       if (isVideoReady) return;
       isVideoReady = true;
 
-      // Crear <video> dinámicamente
       videoEl = document.createElement("video");
       videoEl.setAttribute("id", videoId);
       videoEl.setAttribute("src", videoSrc);
@@ -28,7 +27,6 @@ AFRAME.registerComponent('mindar-video-handler', {
       videoEl.style.display = "none";
       document.body.appendChild(videoEl);
 
-      // Crear plano AR <a-video>
       plane = document.createElement("a-video");
       plane.setAttribute("src", `#${videoId}`);
       plane.setAttribute("width", "1");
@@ -41,7 +39,7 @@ AFRAME.registerComponent('mindar-video-handler', {
         await videoEl.play();
         console.log(`▶️ Reproduciendo video ${videoId}`);
       } catch (err) {
-        console.warn(`⚠️ Error al reproducir ${videoId}:`, err);
+        console.warn(`⚠️ Error al reproducir video ${videoId}:`, err);
       }
     };
 
@@ -62,13 +60,13 @@ AFRAME.registerComponent('mindar-video-handler', {
   }
 });
 
-// Inicializar marcadores cuando el DOM esté listo
+// 🧠 Iniciar al cargar DOM
 document.addEventListener("DOMContentLoaded", () => {
   const scene = document.querySelector("a-scene");
   const totalMarkers = 22;
 
   if (!scene) {
-    console.error("❌ No se encontró <a-scene> en el DOM");
+    console.error("❌ <a-scene> no encontrada en el DOM");
     return;
   }
 
@@ -80,31 +78,27 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Manejar pérdida de contexto WebGL
       canvas.addEventListener("webglcontextlost", (e) => {
         e.preventDefault();
         console.warn("⚠️ WebGL context perdido");
-        alert("El sistema AR se interrumpió. Por favor recarga.");
+        alert("El sistema AR se detuvo. Recarga la página.");
       });
 
-      // Validar WebGL context activo
       const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
       if (!gl) {
-        console.warn("❌ WebGL no disponible al cargar escena");
+        console.warn("❌ WebGL no disponible");
         alert("No se pudo iniciar WebGL. Recarga la página.");
         return;
       }
 
       console.log("✔️ WebGL context activo");
 
-      // Inyectar entidades por marcador
       for (let i = 0; i < totalMarkers; i++) {
         const entity = document.createElement("a-entity");
         entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
         entity.setAttribute("mindar-video-handler", "");
         scene.appendChild(entity);
       }
-
-    }, 100); // pequeño retraso para asegurar canvas válido
+    }, 100); // buffer de seguridad visual
   });
 });

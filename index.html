@@ -51,8 +51,6 @@
   <!-- A-Frame & MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-  <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
@@ -68,17 +66,16 @@
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <template id="video-template">
-        <video
-          autoplay
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          crossorigin="anonymous"
-          style="display: none"
-        ></video>
-      </template>
+      <video
+        id="video1"
+        src="assets/videos/video1.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        crossorigin="anonymous"
+      ></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -87,8 +84,22 @@
   </a-scene>
 
   <script>
-    document.getElementById("start-ar").addEventListener("click", () => {
-      document.querySelector("a-scene").style.display = "block";
+    document.getElementById("start-ar").addEventListener("click", async () => {
+      const scene = document.querySelector("a-scene");
+      const video = document.querySelector("#video1");
+
+      // Mostrar la escena
+      scene.style.display = "block";
+
+      // Reproducir el video manualmente (clave para iOS 18.6+)
+      try {
+        await video.play();
+        console.log("✅ Video reproducido manualmente");
+      } catch (e) {
+        console.warn("❌ No se pudo reproducir el video:", e);
+      }
+
+      // Ocultar botón
       document.getElementById("start-ar").style.display = "none";
     });
   </script>

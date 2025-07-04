@@ -12,45 +12,32 @@
     body { margin: 0; background: black; }
 
     #start-ar {
-      display: none;
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      padding: 14px 24px;
-      font-size: 18px;
-      background-color: #008cff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      z-index: 9999;
-      cursor: pointer;
+      padding: 14px 24px; font-size: 18px;
+      background-color: #008cff; color: white;
+      border: none; border-radius: 8px;
+      z-index: 9999; cursor: pointer;
     }
 
     #marker-info {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 8px 12px;
-      font-family: monospace;
-      border-radius: 6px;
-      z-index: 9998;
+      position: fixed; top: 10px; right: 10px;
+      background: rgba(0, 0, 0, 0.6); color: white;
+      padding: 8px 12px; font-family: monospace;
+      border-radius: 6px; z-index: 9998;
     }
 
-    a-scene {
-      display: none;
-    }
+    a-scene { display: none; }
   </style>
 
-  <!-- A-Frame + MindAR parcheado -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="js/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Reproducir video</button>
+  <button id="start-ar">Iniciar AR</button>
 
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind"
@@ -68,9 +55,21 @@
   </a-scene>
 
   <script>
-    // Mostrar la escena solo cuando el usuario haya interactuado (requerido por iOS 26+)
     document.getElementById("start-ar").addEventListener("click", () => {
+      // 🔥 Mostrar escena de inmediato
       document.querySelector("a-scene").style.display = "block";
+
+      // 🔥 Solicitar permiso explícito para la cámara
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().catch(() => {}).then(() => {});
+      }
+
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission().catch(() => {}).then(() => {});
+      }
+
+      // Ocultar botón para liberar la vista
+      document.getElementById("start-ar").style.display = "none";
     });
   </script>
 </body>

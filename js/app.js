@@ -14,15 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoId = `video-${idx + 1}`;
     const videoSrc = `assets/videos/video${idx + 1}.mp4`;
 
+    // Se ejecuta cuando se detecta el marcador
     target.addEventListener("targetFound", () => {
       console.log(`✅ Marcador detectado: ${idx}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ${idx}`;
       startButton.style.display = "block";
 
-      // ⚠️ Definir el evento de clic al detectar el marcador
+      // Asociamos el click al botón, solo para este marcador
       startButton.onclick = async () => {
         startButton.style.display = "none";
 
+        // Cargamos el video solo una vez
         if (!videoEl) {
           videoEl = document.createElement("video");
           videoEl.setAttribute("id", videoId);
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.appendChild(videoEl);
         }
 
+        // Agregamos el plano solo una vez
         if (!plane) {
           plane = document.createElement("a-video");
           plane.setAttribute("src", `#${videoId}`);
@@ -55,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     });
 
+    // Se ejecuta cuando se pierde el marcador
     target.addEventListener("targetLost", () => {
       console.log(`🕳️ Marcador perdido: ${idx}`);
       if (markerInfo) markerInfo.innerText = "Marcador: ---";
@@ -66,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // Añadimos la entidad target a la escena
     scene.appendChild(target);
   }
 });

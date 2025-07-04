@@ -28,7 +28,7 @@
       background-color: #008cff;
       color: white;
       cursor: pointer;
-      display: none; /* Oculto por defecto */
+      display: none;
     }
 
     #marker-info {
@@ -49,9 +49,9 @@
     }
   </style>
 
-  <!-- A-Frame y MindAR -->
+  <!-- A-Frame y MindAR parcheado para iOS 26 -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="js/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -67,7 +67,9 @@
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
-    <a-assets></a-assets>
+    <a-assets>
+      <!-- Aquí podrías precargar thumbnails o videos si los necesitas estáticamente -->
+    </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
@@ -75,7 +77,7 @@
   </a-scene>
 
   <script>
-    // Mostrar escena (si decides mantener este botón como inicio global)
+    // Activar escena AR solo cuando el usuario interactúe (requerido por iOS 26)
     document.getElementById("start-ar").addEventListener("click", () => {
       document.querySelector("a-scene").style.display = "block";
     });

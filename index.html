@@ -46,8 +46,11 @@
       border-radius: 6px;
     }
 
+    /* ⚠️ NO usar display: none — Safari 26 rompe WebGL */
     a-scene {
-      display: none;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 
@@ -70,7 +73,7 @@
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <!-- Solo 1 video para ejemplo: agregar más según necesidad -->
+      <!-- Ejemplo: un solo video. Los demás se cargan desde JS dinámicamente -->
       <video id="video-1" src="assets/videos/video1.mp4" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
 
@@ -84,25 +87,43 @@
     const scene = document.querySelector("a-scene");
 
     startButton.addEventListener("click", async () => {
-      // Mostrar la escena
-      scene.style.display = "block";
+      // Mostrar la escena correctamente (sin romper WebGL)
+      scene.style.visibility = "visible";
+      scene.style.opacity = "1";
+      scene.style.pointerEvents = "auto";
       startButton.style.display = "none";
 
-      // Intentar desbloquear cámara (iOS 26 requiere interacción)
+      // ⚠️ iOS 26 requiere interacción del usuario para cámara
       try {
         await navigator.mediaDevices?.getUserMedia({ video: true });
+        console.log("✅ Cámara desbloqueada");
       } catch (err) {
-        console.warn("No se pudo acceder a la cámara:", err);
+        console.warn("❌ No se pudo acceder a la cámara:", err);
       }
 
-      // Intentar reproducir los videos manualmente
+      // Reproducir videos manualmente (necesario en iOS)
       const videos = scene.querySelectorAll("video");
       videos.forEach(video => {
-        video.load(); // fuerza preparación
-        video.play().catch(err => {
-          console.warn("Video bloqueado por política de reproducción:", err);
+        video.load();
+        video.play().then(() => {
+          console.log(`🎥 Video ${video.id} reproduciéndose`);
+        }).catch(err => {
+          console.warn(`⚠️ Video ${video.id} bloqueado:`, err);
         });
       });
+    });
+
+    // Validar contexto WebGL cargado
+    scene.addEventListener("loaded", () => {
+      const canvas = scene.canvas;
+      if (canvas && canvas.getContext) {
+        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (gl) {
+          console.log("✔️ WebGL context iniciado correctamente");
+        } else {
+          console.warn("⚠️ No se pudo inicializar WebGL");
+        }
+      }
     });
   </script>
 </body>

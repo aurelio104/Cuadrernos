@@ -13,11 +13,10 @@ AFRAME.registerComponent('mindar-video-handler', {
     let isVideoReady = false;
 
     const createAndPlayVideo = async () => {
-      // Evitar múltiples cargas
       if (isVideoReady) return;
       isVideoReady = true;
 
-      // Crear el elemento <video> dinámicamente
+      // Crear el elemento <video>
       videoEl = document.createElement("video");
       videoEl.setAttribute("id", videoId);
       videoEl.setAttribute("src", videoSrc);
@@ -26,10 +25,10 @@ AFRAME.registerComponent('mindar-video-handler', {
       videoEl.setAttribute("playsinline", true);
       videoEl.setAttribute("webkit-playsinline", true);
       videoEl.setAttribute("crossorigin", "anonymous");
-      videoEl.style.display = "none"; // Oculto, será usado en textura
+      videoEl.style.display = "none"; // oculto en DOM
       document.body.appendChild(videoEl);
 
-      // Crear el plano de proyección del video
+      // Crear el plano de proyección en AR
       plane = document.createElement("a-video");
       plane.setAttribute("src", `#${videoId}`);
       plane.setAttribute("width", "1");
@@ -38,6 +37,7 @@ AFRAME.registerComponent('mindar-video-handler', {
       plane.setAttribute("rotation", "0 0 0");
       el.appendChild(plane);
 
+      // Asegurar que el video se pueda reproducir correctamente
       try {
         await videoEl.play();
         console.log(`▶️ Reproduciendo video ${videoId}`);
@@ -65,10 +65,15 @@ AFRAME.registerComponent('mindar-video-handler', {
   }
 });
 
-// 🔁 Inicializa los 22 marcadores automáticamente
+// 🔁 Inicializar todos los marcadores al cargar
 document.addEventListener("DOMContentLoaded", () => {
   const scene = document.querySelector("a-scene");
   const totalMarkers = 22;
+
+  if (!scene) {
+    console.error("❌ No se encontró <a-scene> en el DOM");
+    return;
+  }
 
   for (let i = 0; i < totalMarkers; i++) {
     const entity = document.createElement("a-entity");
@@ -76,4 +81,17 @@ document.addEventListener("DOMContentLoaded", () => {
     entity.setAttribute("mindar-video-handler", "");
     scene.appendChild(entity);
   }
+
+  // Validar inicialización de WebGL
+  scene.addEventListener('loaded', () => {
+    const canvas = scene.canvas;
+    if (canvas && canvas.getContext) {
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        console.log("✔️ WebGL inicializado correctamente");
+      } else {
+        console.warn("⚠️ No se pudo inicializar WebGL en la escena");
+      }
+    }
+  });
 });

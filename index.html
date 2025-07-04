@@ -46,11 +46,14 @@
       border-radius: 6px;
     }
 
-    /* ⚠️ NO usar display: none — Safari 26 rompe WebGL */
+    /* ✅ NO usar display: none para evitar WebGL context loss */
     a-scene {
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 
@@ -73,7 +76,7 @@
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <!-- Ejemplo: un solo video. Los demás se cargan desde JS dinámicamente -->
+      <!-- Video precargado (puedes eliminar si cargas dinámicamente en JS) -->
       <video id="video-1" src="assets/videos/video1.mp4" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
 
@@ -86,22 +89,61 @@
     const startButton = document.getElementById("start-ar");
     const scene = document.querySelector("a-scene");
 
-    startButton.addEventListener("click", async () => {
-      // Mostrar la escena correctamente (sin romper WebGL)
+    const showScene = () => {
       scene.style.visibility = "visible";
       scene.style.opacity = "1";
       scene.style.pointerEvents = "auto";
+    };
+
+    const checkWebGL = () => {
+      const canvas = scene.canvas;
+      if (canvas && canvas.getContext) {
+        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (!gl) {
+          console.warn("⚠️ WebGL no disponible o falló");
+          alert("No se pudo iniciar WebGL. Recarga la página.");
+        } else {
+          console.log("✔️ WebGL OK");
+        }
+      }
+    };
+
+    // Captura pérdida de contexto WebGL
+    const attachWebGLContextLossHandler = () => {
+      const canvas = scene.canvas;
+      if (!canvas) return;
+      canvas.addEventListener("webglcontextlost", (e) => {
+        e.preventDefault();
+        console.warn("❌ WebGL context perdido");
+        alert("El sistema de realidad aumentada se detuvo. Por favor recarga.");
+      });
+    };
+
+    startButton.addEventListener("click", async () => {
+      // Mostrar escena y activar cámara
+      showScene();
       startButton.style.display = "none";
 
-      // ⚠️ iOS 26 requiere interacción del usuario para cámara
+      // Esperar a que A-Frame esté listo
+      await new Promise(resolve => {
+        if (scene.hasLoaded) return resolve();
+        scene.addEventListener("loaded", resolve, { once: true });
+      });
+
+      // Verificar WebGL y evitar crash
+      checkWebGL();
+      attachWebGLContextLossHandler();
+
+      // Solicitar acceso a la cámara
       try {
         await navigator.mediaDevices?.getUserMedia({ video: true });
-        console.log("✅ Cámara desbloqueada");
+        console.log("✅ Cámara activada");
       } catch (err) {
-        console.warn("❌ No se pudo acceder a la cámara:", err);
+        console.warn("❌ Error al acceder a la cámara:", err);
+        alert("No se pudo activar la cámara.");
       }
 
-      // Reproducir videos manualmente (necesario en iOS)
+      // Reproducir videos precargados si existen
       const videos = scene.querySelectorAll("video");
       videos.forEach(video => {
         video.load();
@@ -111,19 +153,6 @@
           console.warn(`⚠️ Video ${video.id} bloqueado:`, err);
         });
       });
-    });
-
-    // Validar contexto WebGL cargado
-    scene.addEventListener("loaded", () => {
-      const canvas = scene.canvas;
-      if (canvas && canvas.getContext) {
-        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        if (gl) {
-          console.log("✔️ WebGL context iniciado correctamente");
-        } else {
-          console.warn("⚠️ No se pudo inicializar WebGL");
-        }
-      }
     });
   </script>
 </body>

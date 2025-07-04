@@ -7,40 +7,56 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    body { margin: 0; background: black; }
+    body {
+      margin: 0;
+      background-color: black;
+    }
 
     #start-ar {
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
-      padding: 14px 24px; font-size: 18px;
-      background-color: #008cff; color: white;
-      border: none; border-radius: 8px;
-      z-index: 9999; cursor: pointer;
+      z-index: 9999;
+      padding: 14px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #008cff;
+      color: white;
+      cursor: pointer;
+      display: none; /* Oculto por defecto */
     }
 
     #marker-info {
-      position: fixed; top: 10px; right: 10px;
-      background: rgba(0, 0, 0, 0.6); color: white;
-      padding: 8px 12px; font-family: monospace;
-      border-radius: 6px; z-index: 9998;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 8px 12px;
+      font-size: 16px;
+      font-family: monospace;
+      z-index: 9998;
+      border-radius: 6px;
     }
 
     a-scene {
-      visibility: hidden;
+      display: none;
     }
   </style>
 
-  <!-- A-Frame + MindAR -->
+  <!-- A-Frame y MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Iniciar AR</button>
+  <button id="start-ar">Reproducir video</button>
 
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind"
@@ -51,53 +67,17 @@
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
-<a-assets>
-  <video id="video-1" src="assets/videos/video1.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-2" src="assets/videos/video2.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-3" src="assets/videos/video3.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-4" src="assets/videos/video4.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-5" src="assets/videos/video5.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-6" src="assets/videos/video6.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-7" src="assets/videos/video7.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-8" src="assets/videos/video8.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-9" src="assets/videos/video9.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-10" src="assets/videos/video10.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-11" src="assets/videos/video11.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-12" src="assets/videos/video12.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-13" src="assets/videos/video13.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-14" src="assets/videos/video14.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-15" src="assets/videos/video15.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-16" src="assets/videos/video16.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-17" src="assets/videos/video17.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-18" src="assets/videos/video18.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-19" src="assets/videos/video19.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-20" src="assets/videos/video20.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-21" src="assets/videos/video21.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-  <video id="video-22" src="assets/videos/video22.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-</a-assets>
+    <a-assets></a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
-    <a-entity light="type: directional; intensity: 1.2" position="1 2 1"></a-entity>
+    <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="1 2 1"></a-entity>
   </a-scene>
 
   <script>
-    const startBtn = document.getElementById("start-ar");
-    const scene = document.querySelector("a-scene");
-
-    startBtn.addEventListener("click", async () => {
-      // Mostrar escena (no usar display: none, usar visibility)
-      scene.style.visibility = "visible";
-
-      // iOS 13+ necesita permisos de sensores explícitos
-      if (typeof DeviceOrientationEvent?.requestPermission === 'function') {
-        try { await DeviceOrientationEvent.requestPermission(); } catch {}
-      }
-      if (typeof DeviceMotionEvent?.requestPermission === 'function') {
-        try { await DeviceMotionEvent.requestPermission(); } catch {}
-      }
-
-      startBtn.style.display = "none";
+    // Mostrar escena (si decides mantener este botón como inicio global)
+    document.getElementById("start-ar").addEventListener("click", () => {
+      document.querySelector("a-scene").style.display = "block";
     });
   </script>
 </body>

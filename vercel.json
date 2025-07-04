@@ -2,11 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/index",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -30,6 +26,14 @@
         {
           "key": "Cache-Control",
           "value": "no-cache"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
         }
       ]
     }

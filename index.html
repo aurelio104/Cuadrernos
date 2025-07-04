@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="data:," />
+  <link rel="icon" href="favicon.ico" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     html, body {
@@ -46,7 +46,6 @@
       border-radius: 6px;
     }
 
-    /* ✅ NO usar display: none para evitar WebGL context loss */
     a-scene {
       visibility: hidden;
       opacity: 0;
@@ -70,13 +69,13 @@
     mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
     color-space="sRGB"
-    renderer="antialias: true; alpha: true; physicallyCorrectLights: true"
+    renderer="antialias: true; alpha: true; physicallyCorrectLights: true; preserveDrawingBuffer: true"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <!-- Video precargado (puedes eliminar si cargas dinámicamente en JS) -->
+      <!-- Video opcional precargado -->
       <video id="video-1" src="assets/videos/video1.mp4" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
 
@@ -108,7 +107,6 @@
       }
     };
 
-    // Captura pérdida de contexto WebGL
     const attachWebGLContextLossHandler = () => {
       const canvas = scene.canvas;
       if (!canvas) return;
@@ -120,21 +118,21 @@
     };
 
     startButton.addEventListener("click", async () => {
-      // Mostrar escena y activar cámara
+      // Mostrar la escena
       showScene();
       startButton.style.display = "none";
 
-      // Esperar a que A-Frame esté listo
+      // Esperar que A-Frame esté completamente listo
       await new Promise(resolve => {
         if (scene.hasLoaded) return resolve();
         scene.addEventListener("loaded", resolve, { once: true });
       });
 
-      // Verificar WebGL y evitar crash
+      // Validar WebGL y prevenir fallos silenciosos
       checkWebGL();
       attachWebGLContextLossHandler();
 
-      // Solicitar acceso a la cámara
+      // Solicitar cámara
       try {
         await navigator.mediaDevices?.getUserMedia({ video: true });
         console.log("✅ Cámara activada");
@@ -143,7 +141,7 @@
         alert("No se pudo activar la cámara.");
       }
 
-      // Reproducir videos precargados si existen
+      // Reproducir videos si están precargados
       const videos = scene.querySelectorAll("video");
       videos.forEach(video => {
         video.load();

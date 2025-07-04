@@ -25,10 +25,10 @@ AFRAME.registerComponent('mindar-video-handler', {
       videoEl.setAttribute("playsinline", true);
       videoEl.setAttribute("webkit-playsinline", true);
       videoEl.setAttribute("crossorigin", "anonymous");
-      videoEl.style.display = "none"; // oculto visualmente
+      videoEl.style.display = "none";
       document.body.appendChild(videoEl);
 
-      // Crear plano <a-video> en AR
+      // Crear plano AR <a-video>
       plane = document.createElement("a-video");
       plane.setAttribute("src", `#${videoId}`);
       plane.setAttribute("width", "1");
@@ -37,12 +37,11 @@ AFRAME.registerComponent('mindar-video-handler', {
       plane.setAttribute("rotation", "0 0 0");
       el.appendChild(plane);
 
-      // Reproducir video tras permitir cámara
       try {
         await videoEl.play();
         console.log(`▶️ Reproduciendo video ${videoId}`);
       } catch (err) {
-        console.warn(`⚠️ No se pudo reproducir ${videoId}:`, err);
+        console.warn(`⚠️ Error al reproducir ${videoId}:`, err);
       }
     };
 
@@ -73,27 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Crear entidades dinámicamente
-  for (let i = 0; i < totalMarkers; i++) {
-    const entity = document.createElement("a-entity");
-    entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
-    entity.setAttribute("mindar-video-handler", "");
-    scene.appendChild(entity);
-  }
-
-  // Validar WebGL y prevenir fallos silenciosos
+  // Esperar a que A-Frame esté cargado antes de inyectar entidades
   scene.addEventListener('loaded', () => {
     const canvas = scene.canvas;
+
     if (!canvas) {
       console.error("❌ Canvas no inicializado");
       return;
     }
 
-    // Detectar pérdida de contexto WebGL
+    // Protección contra pérdida de contexto WebGL
     canvas.addEventListener("webglcontextlost", (e) => {
       e.preventDefault();
       console.warn("⚠️ WebGL context perdido");
-      alert("El sistema AR falló. Recarga la página.");
+      alert("El sistema AR se interrumpió. Recarga la página.");
     });
 
     const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -101,6 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("✔️ WebGL context activo");
     } else {
       console.warn("❌ WebGL no disponible al cargar escena");
+    }
+
+    // Inyectar los marcadores tras asegurarse de que todo está listo
+    for (let i = 0; i < totalMarkers; i++) {
+      const entity = document.createElement("a-entity");
+      entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
+      entity.setAttribute("mindar-video-handler", "");
+      scene.appendChild(entity);
     }
   });
 });

@@ -3,69 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <title>Repro WebAR</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    body {
-      margin: 0;
-      background-color: black;
-    }
-
-    #activate-camera,
+    body { margin: 0; background: black; }
     #start-ar {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      padding: 14px 24px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      background-color: #008cff;
-      color: white;
-      cursor: pointer;
-    }
-
-    #start-ar {
-      top: 60%;
-      display: none; /* Solo visible cuando se detecta marcador */
-    }
-
-    #marker-info {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 8px 12px;
-      font-size: 16px;
-      font-family: monospace;
-      z-index: 9998;
-      border-radius: 6px;
-    }
-
-    a-scene {
       display: none;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 14px 24px; font-size: 18px;
+      background-color: #008cff; color: white;
+      border: none; border-radius: 8px;
+      z-index: 9999; cursor: pointer;
     }
+    #marker-info {
+      position: fixed; top: 10px; right: 10px;
+      background: rgba(0, 0, 0, 0.6); color: white;
+      padding: 8px 12px; font-family: monospace;
+      border-radius: 6px; z-index: 9998;
+    }
+    a-scene { display: none; }
   </style>
-
-  <!-- A-Frame y MindAR parcheado -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="js/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
-
-  <!-- Botón para iniciar la cámara (siempre visible al cargar) -->
-  <button id="activate-camera">Iniciar cámara</button>
-
-  <!-- Botón que aparece tras detectar marcador -->
   <button id="start-ar">Reproducir video</button>
 
   <a-scene
@@ -80,14 +46,12 @@
     <a-assets></a-assets>
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
-    <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="1 2 1"></a-entity>
+    <a-entity light="type: directional; intensity: 1.2" position="1 2 1"></a-entity>
   </a-scene>
 
   <script>
-    // Mostrar la cámara al presionar el botón
-    document.getElementById("activate-camera").addEventListener("click", () => {
+    document.getElementById("start-ar").addEventListener("click", () => {
       document.querySelector("a-scene").style.display = "block";
-      document.getElementById("activate-camera").style.display = "none";
     });
   </script>
 </body>

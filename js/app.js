@@ -1,86 +1,73 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const scene = document.querySelector("a-scene");
-  const markerInfo = document.getElementById("marker-info");
-  const startButton = document.getElementById("start-ar");
-  const TOTAL_MARCADORES = 22;
+AFRAME.registerComponent('mindar-video-handler', {
+  init: function () {
+    const el = this.el;
+    const markerId = parseInt(el.getAttribute('mindar-image-target').targetIndex, 10);
+    const videoId = `video-${markerId + 1}`;
+    const videoSrc = `assets/videos/video${markerId + 1}.mp4`;
+    const markerInfo = document.getElementById("marker-info");
+    const startButton = document.getElementById("start-ar");
 
-  let activeIdx = null;
-  let activeVideo = null;
-  let activePlane = null;
+    let videoEl = null;
+    let plane = null;
+    let isReady = false;
 
-  for (let i = 0; i < TOTAL_MARCADORES; i++) {
-    const idx = i;
-    const target = document.createElement("a-entity");
-    target.setAttribute("mindar-image-target", `targetIndex: ${idx}`);
-
-    target.addEventListener("targetFound", () => {
-      console.log(`✅ Marcador detectado: ${idx}`);
-      markerInfo.innerText = `Marcador: ${idx}`;
+    el.addEventListener('targetFound', () => {
+      console.log(`✅ Marcador detectado: ${markerId}`);
+      if (markerInfo) markerInfo.innerText = `Marcador: ${markerId}`;
       startButton.style.display = "block";
-      activeIdx = idx;
+
+      if (!isReady) {
+        startButton.onclick = async () => {
+          startButton.style.display = "none";
+          isReady = true;
+
+          videoEl = document.createElement("video");
+          videoEl.setAttribute("id", videoId);
+          videoEl.setAttribute("src", videoSrc);
+          videoEl.setAttribute("loop", true);
+          videoEl.setAttribute("muted", true);
+          videoEl.setAttribute("playsinline", true);
+          videoEl.setAttribute("webkit-playsinline", true);
+          videoEl.setAttribute("crossorigin", "anonymous");
+          videoEl.style.display = "none";
+          document.body.appendChild(videoEl);
+
+          plane = document.createElement("a-video");
+          plane.setAttribute("src", `#${videoId}`);
+          plane.setAttribute("width", "1");
+          plane.setAttribute("height", "1.5");
+          plane.setAttribute("position", "0 0 0");
+          el.appendChild(plane);
+
+          try {
+            await videoEl.play();
+            console.log(`▶️ Video ${videoId} en reproducción`);
+          } catch (err) {
+            console.warn(`⚠️ Error al reproducir ${videoId}`, err);
+          }
+        };
+      }
     });
 
-    target.addEventListener("targetLost", () => {
-      console.log(`🕳️ Marcador perdido: ${idx}`);
-      markerInfo.innerText = "Marcador: ---";
+    el.addEventListener('targetLost', () => {
+      console.log(`🕳️ Marcador perdido: ${markerId}`);
+      if (markerInfo) markerInfo.innerText = "Marcador: ---";
       startButton.style.display = "none";
 
-      if (activeVideo) {
-        activeVideo.pause();
-        activeVideo.currentTime = 0;
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.currentTime = 0;
       }
-
-      activeIdx = null;
     });
-
-    scene.appendChild(target);
   }
+});
 
-  // 🎬 Reproducir video solo cuando el usuario presione el botón
-  startButton.addEventListener("click", async () => {
-    if (activeIdx === null) return;
-
-    const videoId = `video-${activeIdx + 1}`;
-    const videoSrc = `assets/videos/video${activeIdx + 1}.mp4`;
-
-    // Si el video no existe aún, lo creamos dinámicamente
-    if (!activeVideo || activeVideo.id !== videoId) {
-      if (activeVideo) activeVideo.remove(); // elimina el anterior
-
-      activeVideo = document.createElement("video");
-      activeVideo.setAttribute("id", videoId);
-      activeVideo.setAttribute("src", videoSrc);
-      activeVideo.setAttribute("loop", true);
-      activeVideo.setAttribute("muted", true);
-      activeVideo.setAttribute("playsinline", true);
-      activeVideo.setAttribute("webkit-playsinline", true);
-      activeVideo.setAttribute("crossorigin", "anonymous");
-      activeVideo.style.display = "none";
-      document.body.appendChild(activeVideo);
-    }
-
-    // Buscamos o creamos el plano de proyección del video
-    const currentTarget = scene.querySelector(`[mindar-image-target="targetIndex: ${activeIdx}"]`);
-
-    if (!activePlane || !currentTarget.contains(activePlane)) {
-      if (activePlane) activePlane.remove();
-
-      activePlane = document.createElement("a-video");
-      activePlane.setAttribute("src", `#${videoId}`);
-      activePlane.setAttribute("width", "1");
-      activePlane.setAttribute("height", "1.5");
-      activePlane.setAttribute("position", "0 0 0");
-      activePlane.setAttribute("rotation", "0 0 0");
-      currentTarget.appendChild(activePlane);
-    }
-
-    try {
-      await activeVideo.play();
-      console.log(`▶️ Video ${videoId} en reproducción`);
-    } catch (err) {
-      console.warn(`⚠️ No se pudo reproducir el video ${videoId}`, err);
-    }
-
-    startButton.style.display = "none";
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  const scene = document.querySelector("a-scene");
+  for (let i = 0; i < 22; i++) {
+    const entity = document.createElement("a-entity");
+    entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
+    entity.setAttribute("mindar-video-handler", "");
+    scene.appendChild(entity);
+  }
 });

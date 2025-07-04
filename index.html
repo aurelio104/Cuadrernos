@@ -28,7 +28,6 @@
       background-color: #008cff;
       color: white;
       cursor: pointer;
-      display: none; /* Oculto por defecto */
     }
 
     #marker-info {
@@ -49,14 +48,15 @@
     }
   </style>
 
-  <!-- A-Frame y MindAR -->
+  <!-- A-Frame & MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
-  <button id="start-ar">Reproducir video</button>
+  <button id="start-ar">Iniciar ReproAR</button>
 
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind"
@@ -67,7 +67,19 @@
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
-    <a-assets></a-assets>
+    <a-assets>
+      <template id="video-template">
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          webkit-playsinline
+          crossorigin="anonymous"
+          style="display: none"
+        ></video>
+      </template>
+    </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
@@ -75,9 +87,9 @@
   </a-scene>
 
   <script>
-    // Mostrar escena (si decides mantener este botón como inicio global)
     document.getElementById("start-ar").addEventListener("click", () => {
       document.querySelector("a-scene").style.display = "block";
+      document.getElementById("start-ar").style.display = "none";
     });
   </script>
 </body>

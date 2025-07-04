@@ -28,10 +28,12 @@
       border-radius: 6px; z-index: 9998;
     }
 
-    a-scene { display: none; }
+    a-scene {
+      visibility: hidden;
+    }
   </style>
 
-  <!-- A-Frame y MindAR -->
+  <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="js/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
@@ -50,29 +52,12 @@
     shadow="type: pcfsoft"
   >
     <a-assets>
-      <!-- Precargar 22 videos compatibles -->
-      <video id="video-1" src="assets/videos/video1.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-2" src="assets/videos/video2.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-3" src="assets/videos/video3.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-4" src="assets/videos/video4.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-5" src="assets/videos/video5.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-6" src="assets/videos/video6.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-7" src="assets/videos/video7.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-8" src="assets/videos/video8.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-9" src="assets/videos/video9.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-10" src="assets/videos/video10.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-11" src="assets/videos/video11.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-12" src="assets/videos/video12.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-13" src="assets/videos/video13.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-14" src="assets/videos/video14.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-15" src="assets/videos/video15.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-16" src="assets/videos/video16.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-17" src="assets/videos/video17.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-18" src="assets/videos/video18.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-19" src="assets/videos/video19.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-20" src="assets/videos/video20.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-21" src="assets/videos/video21.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-      <video id="video-22" src="assets/videos/video22.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+      <!-- Precarga 22 videos -->
+      ${[...Array(22)].map((_, i) => `
+        <video id="video-${i + 1}" src="assets/videos/video${i + 1}.mp4"
+          autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous">
+        </video>
+      `).join('')}
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -81,19 +66,22 @@
   </a-scene>
 
   <script>
-    document.getElementById("start-ar").addEventListener("click", async () => {
-      // Mostrar escena
-      document.querySelector("a-scene").style.display = "block";
+    const startBtn = document.getElementById("start-ar");
+    const scene = document.querySelector("a-scene");
 
-      // iOS: pedir permiso explícito para usar sensores
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    startBtn.addEventListener("click", async () => {
+      // Mostrar escena (no usar display: none, usar visibility)
+      scene.style.visibility = "visible";
+
+      // iOS 13+ necesita permisos de sensores explícitos
+      if (typeof DeviceOrientationEvent?.requestPermission === 'function') {
         try { await DeviceOrientationEvent.requestPermission(); } catch {}
       }
-      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      if (typeof DeviceMotionEvent?.requestPermission === 'function') {
         try { await DeviceMotionEvent.requestPermission(); } catch {}
       }
 
-      document.getElementById("start-ar").style.display = "none";
+      startBtn.style.display = "none";
     });
   </script>
 </body>

@@ -1,29 +1,31 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const scene = document.querySelector("a-scene");
-  const markerInfo = document.getElementById("marker-info");
-  const startButton = document.getElementById("start-ar");
-  const TOTAL_MARCADORES = 22;
+AFRAME.registerComponent('mindar-video-handler', {
+  init: function () {
+    const el = this.el;
 
-  for (let i = 0; i < TOTAL_MARCADORES; i++) {
-    const idx = i;
-    const target = document.createElement("a-entity");
-    target.setAttribute("mindar-image-target", `targetIndex: ${idx}`);
+    const markerAttr = el.getAttribute('mindar-image-target');
+    const markerId = parseInt(markerAttr?.targetIndex || markerAttr?.['targetIndex'], 10);
+
+    const videoId = `video-${markerId + 1}`;
+    const videoSrc = `assets/videos/video${markerId + 1}.mp4`;
+    const markerInfo = document.getElementById("marker-info");
+    const startButton = document.getElementById("start-ar");
 
     let videoEl = null;
     let plane = null;
-    const videoId = `video-${idx + 1}`;
-    const videoSrc = `assets/videos/video${idx + 1}.mp4`;
+    let isReady = false;
 
-    target.addEventListener("targetFound", () => {
-      console.log(`✅ Marcador detectado: ${idx}`);
-      if (markerInfo) markerInfo.innerText = `Marcador: ${idx}`;
+    el.addEventListener('targetFound', () => {
+      console.log(`✅ Marcador detectado: ${markerId}`);
+      if (markerInfo) markerInfo.innerText = `Marcador: ${markerId}`;
       startButton.style.display = "block";
 
-      // ⚠️ Definir el evento de clic al detectar el marcador
-      startButton.onclick = async () => {
-        startButton.style.display = "none";
+      if (!isReady) {
+        // 🔁 Solo una vez por marcador
+        startButton.onclick = async () => {
+          isReady = true;
+          startButton.style.display = "none";
 
-        if (!videoEl) {
+          // 🎥 Crear video en DOM
           videoEl = document.createElement("video");
           videoEl.setAttribute("id", videoId);
           videoEl.setAttribute("src", videoSrc);
@@ -34,30 +36,29 @@ document.addEventListener("DOMContentLoaded", () => {
           videoEl.setAttribute("crossorigin", "anonymous");
           videoEl.style.display = "none";
           document.body.appendChild(videoEl);
-        }
 
-        if (!plane) {
+          // 🖼️ Crear plano para proyectar video
           plane = document.createElement("a-video");
           plane.setAttribute("src", `#${videoId}`);
           plane.setAttribute("width", "1");
           plane.setAttribute("height", "1.5");
           plane.setAttribute("position", "0 0 0");
           plane.setAttribute("rotation", "0 0 0");
-          target.appendChild(plane);
-        }
+          el.appendChild(plane);
 
-        try {
-          await videoEl.play();
-          console.log(`▶️ Video ${idx + 1} en reproducción`);
-        } catch (err) {
-          console.warn(`⚠️ No se pudo reproducir el video ${idx + 1}`, err);
-        }
-      };
+          try {
+            await videoEl.play();
+            console.log(`▶️ Reproduciendo video ${videoId}`);
+          } catch (err) {
+            console.warn(`⚠️ Error al reproducir ${videoId}`, err);
+          }
+        };
+      }
     });
 
-    target.addEventListener("targetLost", () => {
-      console.log(`🕳️ Marcador perdido: ${idx}`);
-      if (markerInfo) markerInfo.innerText = "Marcador: ---";
+    el.addEventListener('targetLost', () => {
+      console.log(`🕳️ Marcador perdido: ${markerId}`);
+      if (markerInfo) markerInfo.innerText = `Marcador: ---`;
       startButton.style.display = "none";
 
       if (videoEl) {
@@ -65,7 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
         videoEl.currentTime = 0;
       }
     });
+  }
+});
 
-    scene.appendChild(target);
+// 📦 Inicializa entidades de marcador
+document.addEventListener("DOMContentLoaded", () => {
+  const scene = document.querySelector("a-scene");
+  const totalMarkers = 22;
+
+  for (let i = 0; i < totalMarkers; i++) {
+    const entity = document.createElement("a-entity");
+    entity.setAttribute("mindar-image-target", `targetIndex: ${i}`);
+    entity.setAttribute("mindar-video-handler", "");
+    scene.appendChild(entity);
   }
 });

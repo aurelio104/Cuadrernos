@@ -15,6 +15,7 @@
       background-color: black;
     }
 
+    #activate-camera,
     #start-ar {
       position: absolute;
       top: 50%;
@@ -28,7 +29,11 @@
       background-color: #008cff;
       color: white;
       cursor: pointer;
-      display: none;
+    }
+
+    #start-ar {
+      top: 60%;
+      display: none; /* Solo visible cuando se detecta marcador */
     }
 
     #marker-info {
@@ -49,13 +54,18 @@
     }
   </style>
 
-  <!-- A-Frame y MindAR parcheado para iOS 26 -->
+  <!-- A-Frame y MindAR parcheado -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="js/mindar-image-aframe.prod.js"></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <div id="marker-info">Marcador: ---</div>
+
+  <!-- Botón para iniciar la cámara (siempre visible al cargar) -->
+  <button id="activate-camera">Iniciar cámara</button>
+
+  <!-- Botón que aparece tras detectar marcador -->
   <button id="start-ar">Reproducir video</button>
 
   <a-scene
@@ -67,19 +77,17 @@
     device-orientation-permission-ui="enabled: false"
     shadow="type: pcfsoft"
   >
-    <a-assets>
-      <!-- Aquí podrías precargar thumbnails o videos si los necesitas estáticamente -->
-    </a-assets>
-
+    <a-assets></a-assets>
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-entity light="type: ambient; intensity: 0.7"></a-entity>
     <a-entity light="type: directional; intensity: 1.2; color: #ffffff" position="1 2 1"></a-entity>
   </a-scene>
 
   <script>
-    // Activar escena AR solo cuando el usuario interactúe (requerido por iOS 26)
-    document.getElementById("start-ar").addEventListener("click", () => {
+    // Mostrar la cámara al presionar el botón
+    document.getElementById("activate-camera").addEventListener("click", () => {
       document.querySelector("a-scene").style.display = "block";
+      document.getElementById("activate-camera").style.display = "none";
     });
   </script>
 </body>

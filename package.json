@@ -15,12 +15,13 @@
     "vite": "^5.0.0",
     "typescript": "^5.3.3"
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "mind-ar": false
-    }
-  },
   "browser": {
-    "canvas": false
+    "canvas": false         
+  },
+  "engines": {
+    "node": ">=18.0.0"      
+  },
+  "pnpm": {
+    "patchedDependencies": {}
   }
 }

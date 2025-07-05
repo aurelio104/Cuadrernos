@@ -7,21 +7,12 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "aframe": "^1.5.0",
-    "mind-ar": "^1.2.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "vite": "^5.0.0",
     "typescript": "^5.3.3"
   },
-  "browser": {
-    "canvas": false         
-  },
   "engines": {
-    "node": ">=18.0.0"      
-  },
-  "pnpm": {
-    "patchedDependencies": {}
+    "node": ">=18.0.0"
   }
 }

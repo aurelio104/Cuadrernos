@@ -2,19 +2,17 @@
 declare const AFRAME: any
 
 import 'aframe'
-import 'mind-ar/dist/mindar-image-aframe.prod.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   const markerInfo = document.getElementById('marker-info')
   const camError = document.getElementById('cam-error')
-  const camVideo = document.getElementById('mindar-video') as HTMLVideoElement
+  const camVideo = document.getElementById('mindar-video') as HTMLVideoElement | null
 
   if (!camVideo) {
     console.error('❌ El elemento #mindar-video no se encontró en el DOM.')
     return
   }
 
-  // 📷 Inicializar feed de cámara (iOS compatible)
   navigator.mediaDevices
     .getUserMedia({ video: { facingMode: 'environment' } })
     .then(stream => {
@@ -29,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (camError) camError.style.display = 'block'
     })
 
-  // ✅ Confirmar carga de la escena A-Frame
   const scene = document.querySelector('a-scene')
   if (scene) {
     scene.addEventListener('loaded', () => {
@@ -37,20 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // 🛠 Componente de depuración visual
   AFRAME.registerComponent('debug-log', {
     init() {
       console.log('✅ A-Frame entity initialized:', this.el)
     }
   })
 
-  // 🧠 Componente de manejo de marcadores con reproducción de video
   AFRAME.registerComponent('marker-events', {
     init() {
       const el = this.el
       const targetIndex = el.getAttribute('mindar-image-target')?.targetIndex
-      const videoId = `video${Number(targetIndex) + 1}`
-      const video = document.getElementById(videoId) as HTMLVideoElement
+      const videoId = `video${parseInt(targetIndex)}`
+      const video = document.getElementById(videoId) as HTMLVideoElement | null
 
       el.addEventListener('targetFound', () => {
         console.log(`🎯 Marcador detectado: targetIndex = ${targetIndex}`)

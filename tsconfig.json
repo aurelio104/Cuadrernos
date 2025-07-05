@@ -13,10 +13,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "types": ["vite/client"],
-    "baseUrl": ".",                         // ✅ Permite usar aliases
-    "paths": {
-      "canvas": ["./src/shims/canvas"]     // ✅ TypeScript usará shim en vez de canvas nativo
-    }
+    "baseUrl": "."
   },
   "include": ["src"]
 }

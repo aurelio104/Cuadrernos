@@ -1,16 +1,24 @@
 import { defineConfig } from 'vite'
+import path from 'path'
 
-// Configuración para servir archivos estáticos desde `public/` automáticamente
 export default defineConfig({
   root: '.',
   publicDir: 'public',
   server: {
-    host: true,          // ⬅️ ¡Esto permite acceder desde tu IP local!
+    host: true,
     open: true,
     port: 5173
   },
   build: {
     outDir: 'dist',
     emptyOutDir: true
+  },
+  optimizeDeps: {
+    exclude: ['canvas']
+  },
+  resolve: {
+    alias: {
+      canvas: path.resolve(__dirname, 'src/shims/canvas.js')
+    }
   }
 })

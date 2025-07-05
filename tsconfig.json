@@ -12,7 +12,11 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "isolatedModules": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".", // Habilita path aliases
+    "paths": {
+      "canvas": ["./src/shims/canvas"] // 👈 Importante: indica a TypeScript que use el shim
+    }
   },
   "include": ["src"]
 }

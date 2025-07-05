@@ -1,0 +1,75 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: sans-serif;
+  color: #fff;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  background-color: transparent !important;
+}
+
+/* Error de cámara */
+#cam-error {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 0, 0, 0.85);
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 16px;
+  z-index: 9999;
+}
+
+/* Info de marcador */
+#marker-info {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  font-family: monospace;
+  font-size: 16px;
+  border-radius: 6px;
+  background-color: transparent !important;
+  z-index: 9999;
+}
+
+/* Cámara */
+video#mindar-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  background-color: transparent !important;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Escena de A-Frame */
+a-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent !important;
+  z-index: 1;
+}
+
+/* Canvas 3D */
+a-scene > canvas {
+  display: block;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: transparent !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}

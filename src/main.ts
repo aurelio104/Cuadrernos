@@ -1,7 +1,7 @@
 // Declara AFRAME global para TypeScript
 declare const AFRAME: any
 
-import 'aframe'
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const markerInfo = document.getElementById('marker-info')
